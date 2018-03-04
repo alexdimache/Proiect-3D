@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using LevelGeneration;
 
 public class NormalRoom : Room {
 
@@ -20,7 +21,7 @@ public class NormalRoom : Room {
     {
         if (tileChance <= 5)
             return 'P';
-        if (tileChance > 5 && tileChance <= 60)
+        if (tileChance > 5 && tileChance <= 80)
             return '#';
         return 'O';
     }
@@ -33,8 +34,13 @@ public class NormalRoom : Room {
         for (int i = 1; i < roomWidth - 1; i++)
             for (int j = 1; j < roomLength - 1; j++)
             {
-                tileChance = Random.Range(1, 101);
-                roomTiles[i, j] = PickTile(tileChance);
+                if (roomTiles[i, j + 1] == 'D' || roomTiles[i, j - 1] == 'D' || roomTiles[i + 1, j] == 'D' || roomTiles[i - 1, j] == 'D')
+                    roomTiles[i, j] = '#';
+                else
+                {
+                    tileChance = Random.Range(1, 101);
+                    roomTiles[i, j] = PickTile(tileChance);
+                }
             }
 
         Debug.Log("-NORMAL ROOM POPULATED.");

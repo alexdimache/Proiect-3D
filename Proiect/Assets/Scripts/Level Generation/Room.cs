@@ -3,9 +3,9 @@ using LevelGeneration;
 
 public abstract class Room
 {
-    //x coordinate of the center of the room
+    //x coordinate of the top left corner of the room
     protected int cornerX;
-    //y coordinate of the center of the room
+    //y coordinate of the top left corner of the room
     protected int cornerY;
 
     //the length and width of the room
@@ -19,6 +19,9 @@ public abstract class Room
     protected Point[] doors;
     //array showing which door is connected
     protected bool[] connectedDoors;
+
+    //Creating each tile
+    abstract protected void PopulateRoom();
 
     public int GetCornerX()
     {
@@ -55,9 +58,11 @@ public abstract class Room
         return roomWidth;
     }
 
-    public void ConnectDoor(int doorIndex)
+    public void ConnectDoor(Point givenDoor)
     {
-        connectedDoors[doorIndex] = true;
+        for (int i = 0; i < 4; i++)
+            if (doors[i].GetX() == givenDoor.GetX() && doors[i].GetY() == givenDoor.GetY())
+                connectedDoors[i] = true;
     }
 
     //Creating walls and doors
@@ -90,11 +95,8 @@ public abstract class Room
         Debug.Log("-ROOM INITIALIZED.");
     }
 
-    //Creating each tile
-    abstract protected void PopulateRoom();
-
     /*
-     * Setting each door coordinate according 
+     * Setting each door coordinates according 
      * to the center of the room and room dimensions
      */
     public void SetDoors(Point[] coords)
