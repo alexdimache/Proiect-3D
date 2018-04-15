@@ -3,124 +3,151 @@
 public class PlayerController : MonoBehaviour
 {
     //the player's body itself
-    private Rigidbody playerBody;
-    //the camera object
-    private GameObject playerCamera;
+    private CharacterController playerBody;
+    //the player's camera
+    private Camera playerCamera;
+    //the UI object
+    public GameObject playerUIprefab;
+    //the UI instance
+    private GameObject playerUIInstance;
 
-    //variable to check whether the player is on the ground or not
-    private bool isGrounded = false;
-
-    private float gravity = 20.0f;
-    private float jumpForce = 7.5f;
-    private bool canJump = true;
-    private float timeSinceLastJump = -1;
-
-    private float runSpeed = 10.0f;
-    private float walkSpeed = 5.0f;
+    private const float gravity = 25.0f;
+    private const float jumpForce = 10.0f;
+    private const float runSpeed = 8.5f;
+    private const float walkSpeed = 5.0f;
+    private const float airSpeed = 15.0f;
+    private bool jumpQueued = false;
     private float currentSpeed;
+    private float speedMultiplier;
 
-	// Use this for initialization
-	void Start ()
-    {
-        playerBody = GetComponent<Rigidbody>();
-        playerCamera = transform.Find("PlayerCamera").gameObject;
-	}
-	
-	// Update is called once per frame
-	void FixedUpdate ()
-    {
-        if (isGrounded)
-            GroundMovement();
-        else
-            AirMovement();
-	}
+    //mouse sensitivity
+    private float mouseSensitivity = 1.0f;
+    //used to prevent the camera from flipping over
+    private float clampValueX = 0;
+    //getting the raw axis from input
+    private float mouseX;
+    private float mouseY;
+    //getting the axis for the movement
+    private float strafeMovement;
+    private float forwardMovement;
+    //the movement direction and force
+    private Vector3 movementForce = Vector3.zero;
 
-    //called when the player touches a collider
-    private void OnCollisionEnter(Collision collision)
+    // Use this for initialization
+    void Start()
     {
-        while (collision.gameObject.tag == "Ground" && isGrounded == false)
-        {
-            isGrounded = true;
-            Debug.Log("GROUNDED: " + isGrounded.ToString());
-        }
+        playerBody = GetComponent<CharacterController>();
+        playerCamera = GetComponentInChildren<Camera>();
+        playerUIInstance = Instantiate(playerUIprefab);
 
-        canJump = true;
+        //using the pythagorean formula to get the diagonal movement proportion
+        speedMultiplier = Mathf.Sqrt(runSpeed * runSpeed * 2) / runSpeed / 2;
+
+        //TEMP VVV
+        Cursor.lockState = CursorLockMode.Locked;
+        //TEMP ^^^
+    }
+    // FixedUpdate is called 50 times per second (by default)
+    void FixedUpdate()
+    {
+        RotateCamera();
+        Movement();
     }
 
-    //every tile is a apart of the ground
-    private void OnCollisionStay(Collision collision)
+    // Update is called once per frame
+    void Update()
     {
-        if (!isGrounded)
-            isGrounded = true;
-    }
-
-    //called when the player exits the collision
-    private void OnCollisionExit(Collision collision)
-    {
-        while (collision.gameObject.tag == "Ground" && isGrounded == true)
-        {
-            isGrounded = false;
-            Debug.Log("GROUNDED: " + isGrounded.ToString());
-        }
-    }
-
-    private void GroundMovement()
-    {
-        if (Input.GetButton("Jump"))
-        {
-            Jump();
-            return;
-        }
-
         if (Input.GetButton("Walk"))
             currentSpeed = walkSpeed;
         else
             currentSpeed = runSpeed;
-
-        float strafeMovement = Input.GetAxis("Horizontal") * currentSpeed;
-        float forwardMovement = Input.GetAxis("Vertical") * currentSpeed;
-
-        Vector3 movementForce = new Vector3(strafeMovement, 0, forwardMovement);
-        movementForce = transform.TransformDirection(movementForce);
-        movementForce -= playerBody.velocity;
-
-        playerBody.AddForce(movementForce, ForceMode.VelocityChange);
-
     }
 
-    private void Jump()
+    //the camera function
+    private void RotateCamera()
     {
-        //the player cannot jump more than once every 1.5 seconds
-        if (timeSinceLastJump != -1 && Time.time - timeSinceLastJump < 1f)
-            return;
+        //using the mouse X and Y axis
+        mouseX = Input.GetAxisRaw("Mouse X");
+        mouseY = Input.GetAxisRaw("Mouse Y");
 
-        //the player can only jump once in the air
-        if (!isGrounded)
+        //I'm getting the current rotation of the camera and the body
+        Vector3 cameraRotation = playerCamera.transform.rotation.eulerAngles;
+        Vector3 bodyRotation = playerBody.transform.rotation.eulerAngles;
+
+        //the rotationon the X axis and Y axis
+        cameraRotation.x -= mouseY * mouseSensitivity;
+        clampValueX -= mouseY * mouseSensitivity;
+        bodyRotation.y += mouseX * mouseSensitivity;
+        cameraRotation.z = 0;
+
+        //prevent it from flipping when looking straight down
+        if (clampValueX > 90)
         {
-            canJump = false;
-            jumpForce = gravity + 5.0f;
+            clampValueX = 90;
+            cameraRotation.x = 90;
         }
         else
-        jumpForce = 7.5f; //going back to the normal jump force
-
-
-        Debug.Log("JUMP " + (Time.time - timeSinceLastJump));
-        timeSinceLastJump = Time.time;
-        playerBody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-        
+            //prevent it from flipping when looking straight up
+            if (clampValueX < -90)
+        {
+            clampValueX = -90;
+            cameraRotation.x = 270;
+        }
+        //applying the rotation for the camera on the X axis 
+        //and for the body as well, on the Y axis
+        playerCamera.transform.rotation = Quaternion.Euler(cameraRotation);
+        playerBody.transform.rotation = Quaternion.Euler(bodyRotation);
     }
 
-    private void AirMovement()
+    private void Movement()
     {
-        if (Input.GetButton("Jump") && canJump)
-            Jump();
+        forwardMovement = Input.GetAxis("Vertical");
+        strafeMovement = Input.GetAxis("Horizontal");
 
-        //applying my own gravity
-        Vector3 fallingForce = Vector3.down * gravity;
-        playerBody.AddForce(fallingForce, ForceMode.Acceleration);
+        if (playerBody.isGrounded)
+        {
+            movementForce.x = strafeMovement * currentSpeed;
+            movementForce.z = forwardMovement * currentSpeed;
 
-        float strafeMovement = Input.GetAxis("Horizontal");
-        playerBody.AddForce(strafeMovement * Vector3.right, ForceMode.Force);
-        
+            if (forwardMovement != 0 && strafeMovement != 0)
+            {
+                movementForce.x *= speedMultiplier;
+                movementForce.z *= speedMultiplier;
+            }
+            if (Input.GetButtonDown("Jump") || jumpQueued)
+            {
+                Debug.Log("JUMP");
+
+                if (jumpQueued)
+                    jumpQueued = false;
+
+                movementForce.y = jumpForce;
+            }
+        }   
+        else
+        {
+            if(forwardMovement!=0 && strafeMovement == 0)
+            {
+                movementForce.x = 0;
+                movementForce.z = forwardMovement * airSpeed;
+            }
+            else
+            {
+                movementForce.x = strafeMovement * airSpeed;
+                movementForce.z = 0;
+            }
+
+            if (Input.GetButtonDown("Jump"))
+                jumpQueued = true;
+
+            //if the player is not grounded I'm applying gravity
+            movementForce.y -= gravity * Time.deltaTime;
+        }
+
+        //changing the direction of the movement to match the body's direction
+        movementForce = transform.TransformDirection(movementForce);
+
+        //moving the player
+        playerBody.Move(movementForce * Time.deltaTime);
     }
 }
