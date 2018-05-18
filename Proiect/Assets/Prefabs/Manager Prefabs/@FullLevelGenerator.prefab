@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1859000436163780}
+  m_IsPrefabParent: 1
+--- !u!1 &1859000436163780
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4280087079865248}
+  - component: {fileID: 114787814176473362}
+  m_Layer: 0
+  m_Name: '@FullLevelGenerator'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4280087079865248
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1859000436163780}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114787814176473362
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1859000436163780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f65cb7f258929114998cf9c8b7bc675c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tiles:
+  - {fileID: 100000, guid: b2f96746c6005c64888263f64272a556, type: 2}
+  - {fileID: 100000, guid: 36f258ea05b6e8644ae91a5b98eba017, type: 2}
+  - {fileID: 100000, guid: de3b8c31d809a0442bdf5e22edaf92be, type: 2}
+  - {fileID: 100000, guid: 91d652779ec7140488b6b8e360497937, type: 2}
+  - {fileID: 100000, guid: c8fcb67cb3d648b4b87d500ece16b15f, type: 2}
+  - {fileID: 115752, guid: 731670d05affd0045a25600d2045889f, type: 2}
+  - {fileID: 0}
+  - {fileID: 100000, guid: f5507bdcafa59ee4796ef124f9fa7d3c, type: 2}
+  - {fileID: 100000, guid: 8811c9285b2bf334fb3e80d71c9e001b, type: 2}
+  playerObject: {fileID: 1829319890557322, guid: 0b1fa064c7e26694fb70f7633ef17bcb,
+    type: 2}

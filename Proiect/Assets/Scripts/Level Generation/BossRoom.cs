@@ -30,6 +30,9 @@ public class BossRoom: Room {
         roomTiles[roomWidth - 5, 4] = 'P';
         roomTiles[4, roomLength - 5] = 'P';
         roomTiles[roomWidth - 5, roomLength - 5] = 'P';
+        //DELET DIS
+        roomTiles[roomWidth / 2, roomLength / 2] = '@';
+        //^^^
 
         Debug.Log("-BOSS ROOM POPULATED.");
     }

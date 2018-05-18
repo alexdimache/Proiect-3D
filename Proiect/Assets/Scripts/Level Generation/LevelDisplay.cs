@@ -3,9 +3,11 @@
 public class LevelDisplay : MonoBehaviour {
     //GameObject with all the prefabs that will be instantiated
     public GameObject[] tiles;
+    public GameObject playerObject;
 
     private static GameObject worldTerrain;
     private static GameObject worldProps;
+    private static GameObject characters;
 
     //the level object
     private static LevelMap levelMap;
@@ -21,21 +23,26 @@ public class LevelDisplay : MonoBehaviour {
     {
         worldTerrain = transform.Find("/World/Terrain").gameObject;
         worldProps = transform.Find("/World/Props").gameObject;
+        characters = transform.Find("/World/Characters").gameObject;
         levelMap = new LevelMap();
         nrOfLines = levelMap.GetNrOfLines();
         level = levelMap.GetLevel();
-        DisplayLevel(tiles, worldTerrain);
+        DisplayLevel(tiles, playerObject);
 	}
     //display the level
-    private static void DisplayLevel(GameObject[] tiles, GameObject worldTerrain)
+    private static void DisplayLevel(GameObject[] tiles, GameObject playerObject)
     {
         for (int i = 1; i < nrOfLines-1; i++)
             for(int j = 1; j < nrOfLines - 1; j++)
             {
                 switch (level[i, j])
                 {
-                    //NORMAL FLOOR
+                    //PLAYER SPAWN
                     case '@':
+                        Instantiate(playerObject, new Vector3(tiles[0].GetComponent<Renderer>().bounds.size.x * i, 10, tiles[0].GetComponent<Renderer>().bounds.size.x * j), playerObject.transform.rotation, characters.transform);
+                        Instantiate(tiles[0], new Vector3(tiles[0].GetComponent<Renderer>().bounds.size.x * i, 0, tiles[0].GetComponent<Renderer>().bounds.size.x * j), tiles[0].transform.rotation, worldTerrain.transform);
+                        break;
+                    //NORMAL FLOOR
                     case '#':
                         Instantiate(tiles[0], new Vector3(tiles[0].GetComponent<Renderer>().bounds.size.x * i, 0, tiles[0].GetComponent<Renderer>().bounds.size.x * j), tiles[0].transform.rotation, worldTerrain.transform);
                         break;

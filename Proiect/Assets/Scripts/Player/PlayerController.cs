@@ -11,23 +11,37 @@ public class PlayerController : MonoBehaviour
     //the UI instance
     private GameObject playerUIInstance;
 
+    // the gravity
     private const float gravity = 25.0f;
+    // the jump force
     private const float jumpForce = 10.0f;
-    private const float runSpeed = 8.5f;
+    // the running speed
+    private const float runSpeed = 7.5f;
+    // the walking speed
     private const float walkSpeed = 5.0f;
-    private const float airSpeed = 15.0f;
-    private bool jumpQueued = false;
-    private float currentSpeed;
+    // maximum multiplier for the speed while in air 
+    private const float maxMultiplier = 2;
+    // the player needs to jump 3 times consecutively to reach the maximum air speed
+    private const float multiplierIncrement = 2.0f / 3;
+    
+    // flag to see if there's a jump queued
+    private bool jumpQueued;
+    // multiplier used to reach the maximum air speed
+    private float airSpeedMultiplier;
+    // value used to multiply the speed when moving diagonally
     private float speedMultiplier;
+    // the current speed
+    private float currentSpeed;
+    
 
     //mouse sensitivity
     private float mouseSensitivity = 1.0f;
     //used to prevent the camera from flipping over
     private float clampValueX = 0;
-    //getting the raw axis from input
+    //using the mouse X and Y axis
     private float mouseX;
     private float mouseY;
-    //getting the axis for the movement
+    //using the input axis for vertical and horizontal movement
     private float strafeMovement;
     private float forwardMovement;
     //the movement direction and force
@@ -36,6 +50,8 @@ public class PlayerController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        jumpQueued = false;
+
         playerBody = GetComponent<CharacterController>();
         playerCamera = GetComponentInChildren<Camera>();
         playerUIInstance = Instantiate(playerUIprefab);
@@ -66,7 +82,7 @@ public class PlayerController : MonoBehaviour
     //the camera function
     private void RotateCamera()
     {
-        //using the mouse X and Y axis
+        //getting the raw axis from input
         mouseX = Input.GetAxisRaw("Mouse X");
         mouseY = Input.GetAxisRaw("Mouse Y");
 
@@ -101,6 +117,7 @@ public class PlayerController : MonoBehaviour
 
     private void Movement()
     {
+        //getting the axis for the movement
         forwardMovement = Input.GetAxis("Vertical");
         strafeMovement = Input.GetAxis("Horizontal");
 
@@ -114,27 +131,33 @@ public class PlayerController : MonoBehaviour
                 movementForce.x *= speedMultiplier;
                 movementForce.z *= speedMultiplier;
             }
+
             if (Input.GetButtonDown("Jump") || jumpQueued)
             {
                 Debug.Log("JUMP");
+
+                if (airSpeedMultiplier < maxMultiplier)
+                    airSpeedMultiplier += multiplierIncrement;
 
                 if (jumpQueued)
                     jumpQueued = false;
 
                 movementForce.y = jumpForce;
             }
+            else
+                airSpeedMultiplier = 1;
         }   
         else
         {
-            if(forwardMovement!=0 && strafeMovement == 0)
+            if(forwardMovement == 0 && strafeMovement != 0)
             {
-                movementForce.x = 0;
-                movementForce.z = forwardMovement * airSpeed;
+                movementForce.x = strafeMovement * runSpeed * airSpeedMultiplier;
+                movementForce.z = 0;
             }
             else
             {
-                movementForce.x = strafeMovement * airSpeed;
-                movementForce.z = 0;
+                movementForce.x = 0;
+                movementForce.z = forwardMovement * runSpeed * airSpeedMultiplier;
             }
 
             if (Input.GetButtonDown("Jump"))

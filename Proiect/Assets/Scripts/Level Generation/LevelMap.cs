@@ -28,7 +28,7 @@ public class LevelMap
         Debug.Log(debugOutput);
         InitLevel();
         PopulateLevel();
-        DrawTunnels();
+        //DrawTunnels();
         ClearUnusedDoors();
         debugOutput += "\nNumber of rooms added: " + rooms.Count.ToString();
         Debug.Log(debugOutput);
@@ -107,9 +107,9 @@ public class LevelMap
         int rWidth;
         int givenX = Random.Range(3, nrOfLines - 4);
         int givenY = Random.Range(3, nrOfLines - 4);
-
+        /*
         rooms.Add(new StartRoom(givenX, givenY));
-        AddRoom(rooms[0]);
+        AddRoom(rooms[0]);*/
         
         //Boss room (81 tiles, 11x11 with walls)
         bool bossRoomPlaced = false;
@@ -120,11 +120,11 @@ public class LevelMap
             if (CheckArea(givenX, givenY, 11, 11))
             {
                 rooms.Add(new BossRoom(givenX, givenY));
-                AddRoom(rooms[1]);
+                AddRoom(rooms[0]);
                 bossRoomPlaced = true;
             }
         }
-        
+        /*
         //the rest of the rooms
         while (rooms.Count < maxNrOfRooms)
         {
@@ -138,7 +138,7 @@ public class LevelMap
                 AddRoom(rooms[rooms.Count - 1]);
             }
         }
-        
+        */
         Debug.Log("LEVEL POPULATED. \nTIME: " + Time.realtimeSinceStartup.ToString() + " seconds");
     }
 
