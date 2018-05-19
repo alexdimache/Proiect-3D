@@ -25,7 +25,7 @@ public class BloodyAxe : MonoBehaviour
             Damage = 20,
             SecondaryDamage = 0,
             Range = 0,
-            AmmoType = null,
+            AmmoName = null,
             WeaponPosition = new Vector3(0.2f, -0.45f, 0.45f),
             WeaponRotation = Quaternion.Euler(-65, 50, -50),
             WeaponAnimator = GetComponent<Animator>(),

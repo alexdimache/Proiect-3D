@@ -27,7 +27,7 @@ public class Weapon
     private float range;
 
     // the type of ammo
-    private AmmoType ammoType;
+    private string ammoName;
 
     // position of the weapon
     private Vector3 weaponPosition;
@@ -90,10 +90,10 @@ public class Weapon
         set { range = value; }
     }
 
-    public AmmoType AmmoType
+    public string AmmoName
     {
-        get { return ammoType; }
-        set { ammoType = value; }
+        get { return ammoName; }
+        set { ammoName = value; }
     }
 
     public Vector3 WeaponPosition

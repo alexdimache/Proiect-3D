@@ -8,6 +8,9 @@ TagManager:
   - Wall
   - Weapon
   - WeaponPickup
+  - shield
+  - explosion
+  - Projectile
   layers:
   - Default
   - TransparentFX

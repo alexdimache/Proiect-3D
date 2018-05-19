@@ -33,6 +33,7 @@ public class WeaponHolder : MonoBehaviour
     public void AddWeapon(GameObject givenWeapon)
     {
         GameObject tempInstance = Instantiate(givenWeapon, transform);
+        givenWeapon.SetActive(false);
         switch (givenWeapon.name)
         {
             case "Bloody Axe":
@@ -54,38 +55,29 @@ public class WeaponHolder : MonoBehaviour
         
     }
 
-    public bool HasWeapons()
+    public void AddAmmo(string ammoName)
     {
-        if (weaponList.Count != 0)
-            return true;
 
-        return false;
     }
 
-    public GameObject GetCurrentWeapon
+    private GameObject FindWeapon(string givenName)
     {
-        get
-        {
-            if (HasWeapons())
-                return selectedWeapon;
-            else
-                return null;
-        }
+        foreach (GameObject obj in weaponList)
+            if (obj.name.Equals(givenName))
+                return obj;
+        return null;
     }
 
     public void SetActiveWeapon(string weaponName)
     {
-        if (HasWeapons())
+        if (FindWeapon(weaponName) != null)
         {
             if (selectedWeapon != null)
                 selectedWeapon.SetActive(false);
- 
-            if(weaponList.Find(item => item.name.Equals(weaponName)) != null)
-            {
-                selectedWeapon = weaponList.Find(item => item.name.Equals(weaponName));
-                selectedWeapon.SetActive(true);
-                Debug.Log("SELECTED " + selectedWeapon.ToString());
-            } 
+
+            selectedWeapon = FindWeapon(weaponName);
+            selectedWeapon.SetActive(true);
+            Debug.Log("SELECTED " + selectedWeapon.ToString());
         } 
     }
 }

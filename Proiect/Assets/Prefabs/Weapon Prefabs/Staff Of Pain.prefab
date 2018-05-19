@@ -171,6 +171,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80cdacdb142dbca4889f2d4820ae7a91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  primaryProjectile: {fileID: 1806664791187874, guid: eae6f2d53acf3d54f9f11762e4a81f85,
+    type: 2}
+  secondaryProjectile: {fileID: 0}
 --- !u!215 &215771756655853818
 ReflectionProbe:
   m_ObjectHideFlags: 1

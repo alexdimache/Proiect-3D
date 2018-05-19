@@ -2,7 +2,14 @@
 
 public class StaffOfPain : MonoBehaviour
 {
+    // the stats of the weapon
     private static Weapon staffOfPain;
+    // the projectile prefabs
+    [SerializeField]
+    private GameObject primaryProjectile;
+    [SerializeField]
+    private GameObject secondaryProjectile;
+    // the player's controller
     private CharacterController playerController;
     // the time of the last attack
     private float timeOfLastAttack;
@@ -21,12 +28,12 @@ public class StaffOfPain : MonoBehaviour
             WeaponName = "Staff Of Pain",
             RateOfFire = 1,
             SecondRateOfFire = 1.5f,
-            MaxAmmo = -1,
-            InitialAmmo = -1,
+            MaxAmmo = 120,
+            InitialAmmo = 12,
             Damage = 20,
             SecondaryDamage = 10,
-            Range = 0,
-            AmmoType = null,
+            Range = 10,
+            AmmoName = "RedMana",
             WeaponPosition = new Vector3(0.2f, -0.5f, 0.5f),
             WeaponRotation = Quaternion.Euler(5, 0, -15),
             WeaponAnimator = GetComponent<Animator>(),

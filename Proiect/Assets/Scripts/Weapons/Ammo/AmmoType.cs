@@ -1,29 +1,26 @@
-﻿public abstract class AmmoType
+﻿using UnityEngine;
+
+public class AmmoType: MonoBehaviour
 {
     // the projectile's name
-    private string name;
-
-    // the amount of force it has
-    private float force;
+    private string ammoName;
 
     // how much ammo is in one pack
     private int quantity;
 
-    public string Name
+    public AmmoType(string givenName, int givenQuantity)
     {
-        get { return name; }
-        protected set { name = value; }
+        ammoName = givenName;
+        quantity = givenQuantity;
     }
 
-    public float Force
+    public string AmmoName
     {
-        get { return force; }
-        protected set { force = value; }
+        get { return ammoName; }
     }
 
     public int Quantity
     {
         get { return quantity; }
-        protected set { quantity = value; }
     }
 }

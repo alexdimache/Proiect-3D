@@ -45,8 +45,11 @@ public class Player : MonoBehaviour
         switch (other.tag)
         {
             case "WeaponPickup":
-                    weaponHolder.AddWeapon(other.gameObject.GetComponent<WeaponPickup>().GetPrefab);
-                    break;
+                weaponHolder.AddWeapon(other.gameObject.GetComponent<WeaponPickup>().GetPrefab);
+                break;
+            case "AmmoPickup":
+                weaponHolder.AddAmmo(other.gameObject.GetComponent<AmmoType>().AmmoName);
+                break;
             default:
                 Debug.Log("OTHER TRIGGER");
                 break;
