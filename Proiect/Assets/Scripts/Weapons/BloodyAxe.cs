@@ -78,6 +78,6 @@ public class BloodyAxe : MonoBehaviour
     // secondary attack of the weapon
     public void SecondaryFire()
     {
-
+        // no secondary attack
     }
 }

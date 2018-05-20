@@ -4,15 +4,19 @@ using UnityEngine;
 public class WeaponHolder : MonoBehaviour
 {
     // the list with the weapons
-    [SerializeField]
     private List<GameObject> weaponList;
     // the weapon currently selected
     private GameObject selectedWeapon;
+    private GameObject projectilePool;
+    // object pool for the weapon projectiles
+    private Dictionary<string, Queue<GameObject>> objectPool;
 
     // Use this for initialization
     void Start()
     {
         weaponList = new List<GameObject>(5);
+        projectilePool = transform.Find("_ProjectilePool").gameObject;
+        objectPool = new Dictionary<string, Queue<GameObject>>();
         selectedWeapon = null;
     }
 
@@ -33,7 +37,6 @@ public class WeaponHolder : MonoBehaviour
     public void AddWeapon(GameObject givenWeapon)
     {
         GameObject tempInstance = Instantiate(givenWeapon, transform);
-        givenWeapon.SetActive(false);
         switch (givenWeapon.name)
         {
             case "Bloody Axe":
@@ -50,9 +53,26 @@ public class WeaponHolder : MonoBehaviour
                 tempInstance.transform.localRotation = StaffOfPain.AttachedWeapon.WeaponRotation;
                 
                 weaponList.Add(givenWeapon);
+
+                // instantiating 12 projectiles of every type
+                Queue<GameObject> tempPrimaryPool = new Queue<GameObject>();
+                Queue<GameObject> tempSecondaryPool = new Queue<GameObject>();
+                for(int i = 0; i < 12; i++)
+                {
+                    GameObject obj = Instantiate(givenWeapon.GetComponent<StaffOfPain>().PrimaryProjectile, projectilePool.transform);
+                    obj.SetActive(false);
+                    tempPrimaryPool.Enqueue(obj);
+                    obj = Instantiate(givenWeapon.GetComponent<StaffOfPain>().SecondaryProjectile, projectilePool.transform);
+                    obj.SetActive(false);
+                    tempSecondaryPool.Enqueue(obj);
+                }
+                objectPool.Add("Primary_" + givenWeapon.name, tempPrimaryPool);
+                objectPool.Add("Secondary_" + givenWeapon.name, tempSecondaryPool);
+
                 break;
         }
-        
+        givenWeapon.SetActive(false);
+
     }
 
     public void AddAmmo(string ammoName)

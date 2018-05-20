@@ -19,7 +19,7 @@ public class StaffOfPain : MonoBehaviour
     void Awake()
     {
         playerController = GetComponentInParent<CharacterController>();
-
+        
         timeOfLastAttack = 0;
         timeOfSecAttack = 0;
 
@@ -72,6 +72,22 @@ public class StaffOfPain : MonoBehaviour
         get
         {
             return staffOfPain;
+        }
+    }
+
+    public GameObject PrimaryProjectile
+    {
+        get
+        {
+            return primaryProjectile;
+        }
+    }
+
+    public GameObject SecondaryProjectile
+    {
+        get
+        {
+            return secondaryProjectile;
         }
     }
 

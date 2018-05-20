@@ -126,16 +126,19 @@ public class PlayerController : MonoBehaviour
             movementForce.x = strafeMovement * currentSpeed;
             movementForce.z = forwardMovement * currentSpeed;
 
+            // in case the player moves diagonally the velocities do not add up
             if (forwardMovement != 0 && strafeMovement != 0)
             {
                 movementForce.x *= speedMultiplier;
                 movementForce.z *= speedMultiplier;
             }
 
+            // the player jumps if the jump button is pressed or a jump is queued
             if (Input.GetButtonDown("Jump") || jumpQueued)
             {
                 Debug.Log("JUMP");
 
+                // the bunny hop
                 if (airSpeedMultiplier < maxMultiplier)
                     airSpeedMultiplier += multiplierIncrement;
 
@@ -149,15 +152,22 @@ public class PlayerController : MonoBehaviour
         }   
         else
         {
-            if(forwardMovement == 0 && strafeMovement != 0)
-            {
-                movementForce.x = strafeMovement * runSpeed * airSpeedMultiplier;
-                movementForce.z = 0;
-            }
-            else
-            {
-                movementForce.x = 0;
+            if (forwardMovement != 0)
                 movementForce.z = forwardMovement * runSpeed * airSpeedMultiplier;
+            else
+                movementForce.z = 0;
+
+            if (strafeMovement != 0)
+                movementForce.x = strafeMovement * runSpeed * airSpeedMultiplier;
+            else
+                movementForce.x = 0;
+
+            // in case the player moves diagonally in the air
+            // the air velocities do not add up
+            if (forwardMovement != 0 && strafeMovement != 0)
+            {
+                movementForce.x *= speedMultiplier;
+                movementForce.z *= speedMultiplier;
             }
 
             if (Input.GetButtonDown("Jump"))
