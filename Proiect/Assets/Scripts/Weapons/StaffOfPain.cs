@@ -2,6 +2,7 @@
 
 public class StaffOfPain : MonoBehaviour
 {
+    private WeaponHolder holderInstance;
     // the stats of the weapon
     private static Weapon staffOfPain;
     // the projectile prefabs
@@ -9,16 +10,22 @@ public class StaffOfPain : MonoBehaviour
     private GameObject primaryProjectile;
     [SerializeField]
     private GameObject secondaryProjectile;
+    // the location from where the projectile spawns
+    private Transform projectileSpawn;
     // the player's controller
     private CharacterController playerController;
     // the time of the last attack
     private float timeOfLastAttack;
     // the time since the last secondary attack
     private float timeOfSecAttack;
+    // current ammo
+    private int currentAmmo;
 
     void Awake()
     {
+        holderInstance = GetComponentInParent<WeaponHolder>();
         playerController = GetComponentInParent<CharacterController>();
+        projectileSpawn = transform.Find("ProjectileSpawn");
         
         timeOfLastAttack = 0;
         timeOfSecAttack = 0;
@@ -39,6 +46,7 @@ public class StaffOfPain : MonoBehaviour
             WeaponAnimator = GetComponent<Animator>(),
             AllowAnimations = true
         };
+        currentAmmo = staffOfPain.InitialAmmo;
     }
 
     public void FixedUpdate()
@@ -94,7 +102,11 @@ public class StaffOfPain : MonoBehaviour
     // primary attack of the weapon
     public void PrimaryFire()
     {
-        
+        currentAmmo--;
+        GameObject projectileInstance = holderInstance.GetProjectile("Primary_" + staffOfPain.WeaponName);
+        projectileInstance.transform.position = projectileSpawn.position;
+        projectileInstance.transform.rotation = projectileSpawn.rotation;
+        projectileInstance.SetActive(true);
     }
 
     // secondary attack of the weapon

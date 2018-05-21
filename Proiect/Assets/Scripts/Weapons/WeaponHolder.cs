@@ -7,6 +7,7 @@ public class WeaponHolder : MonoBehaviour
     private List<GameObject> weaponList;
     // the weapon currently selected
     private GameObject selectedWeapon;
+    // game object for the projectiles
     private GameObject projectilePool;
     // object pool for the weapon projectiles
     private Dictionary<string, Queue<GameObject>> objectPool;
@@ -71,8 +72,19 @@ public class WeaponHolder : MonoBehaviour
 
                 break;
         }
-        givenWeapon.SetActive(false);
+        //givenWeapon.SetActive(false);
 
+    }
+
+    public GameObject GetProjectile(string projectileName)
+    {
+        return objectPool[projectileName].Dequeue();
+    }
+
+    public void AddProjectile(string projectileName, GameObject givenProjectile)
+    {
+        objectPool[projectileName].Enqueue(givenProjectile);
+        givenProjectile.SetActive(false);
     }
 
     public void AddAmmo(string ammoName)
