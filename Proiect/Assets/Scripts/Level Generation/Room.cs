@@ -103,6 +103,7 @@ public abstract class Room
     {
         doors = new Point[4];
         connectedDoors = new bool[4];
+
         for (int i = 0; i < 4; i++)
         {
             doors[i] = new Point(coords[i].GetX(), coords[i].GetY());
@@ -124,7 +125,7 @@ public abstract class Room
             tempOutput += "\n";
         }
         tempOutput += "\n Room dimension: " + roomLength.ToString() + "x" + roomWidth.ToString()+"\n";
-        tempOutput += "Center: " + cornerX.ToString() + " " + cornerY.ToString() + "\n";
+        tempOutput += "Corner: " + cornerX.ToString() + " " + cornerY.ToString() + "\n";
         Debug.Log(tempOutput);
     }
 

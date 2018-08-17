@@ -22,7 +22,7 @@ public class StartRoom : Room {
             {
                 roomTiles[i, j] = '#';
             }
-        roomTiles[roomWidth / 2, roomLength / 2] = '@';
+        //roomTiles[roomWidth / 2, roomLength / 2] = '@';
 
         Debug.Log("-START ROOM POPULATED.");
     }

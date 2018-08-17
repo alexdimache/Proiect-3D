@@ -105,7 +105,10 @@ public class WeaponHolder : MonoBehaviour
         if (FindWeapon(weaponName) != null)
         {
             if (selectedWeapon != null)
+            {
                 selectedWeapon.SetActive(false);
+            }
+                
 
             selectedWeapon = FindWeapon(weaponName);
             selectedWeapon.SetActive(true);

@@ -5,18 +5,18 @@ public class LevelDisplay : MonoBehaviour {
     public GameObject[] tiles;
     public GameObject playerObject;
 
-    private static GameObject worldTerrain;
-    private static GameObject worldProps;
-    private static GameObject characters;
+    private GameObject worldTerrain;
+    private GameObject worldProps;
+    private GameObject characters;
 
     //the level object
-    private static LevelMap levelMap;
+    private LevelMap levelMap;
     //the maximum number of lines of the level
-    private static int nrOfLines;
+    private int nrOfLines;
     //the level map itself
-    private static char[,] level;
+    private char[,] level;
     //available tiles for a room
-    private static string availableTiles = "#OpPB";
+    private string availableTiles = "#OpPB";
 
     // Use this for initialization
     void Awake ()
@@ -30,9 +30,9 @@ public class LevelDisplay : MonoBehaviour {
         DisplayLevel(tiles, playerObject);
 	}
     //display the level
-    private static void DisplayLevel(GameObject[] tiles, GameObject playerObject)
+    private void DisplayLevel(GameObject[] tiles, GameObject playerObject)
     {
-        for (int i = 1; i < nrOfLines-1; i++)
+        for (int i = 1; i < nrOfLines - 1; i++)
             for(int j = 1; j < nrOfLines - 1; j++)
             {
                 switch (level[i, j])

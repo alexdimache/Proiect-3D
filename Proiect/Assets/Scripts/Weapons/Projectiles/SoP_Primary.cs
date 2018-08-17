@@ -26,7 +26,7 @@ public class SoP_Primary : MonoBehaviour
         if (Vector3.Distance(projectileTransform, transform.position) >= projectileRange)
             holderInstance.AddProjectile(projectileName, transform.parent.gameObject);
 
-        projectileBody.AddForce(Vector3.forward/100, ForceMode.Impulse);
+        projectileBody.AddForce(Vector3.forward/5, ForceMode.VelocityChange);
     }
 
     private void OnTriggerEnter(Collider other)

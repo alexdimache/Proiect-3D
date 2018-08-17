@@ -5,31 +5,33 @@ using LevelGeneration;
 public class LevelMap
 {
     //array of rooms
-    private static List<Room> rooms;
+    private List<Room> rooms;
     //number of lines of the level array
-    private static int nrOfLines = 50;
-    //the level array
-    private static char[,] level = new char[nrOfLines, nrOfLines];
+    private int nrOfLines = 60;
+    //the level map array
+    private char[,] level;
     //the maximum number of rooms in the level
-    private static int maxNrOfRooms;
+    private int maxNrOfRooms;
     //room dimensions
     private int minDimension = 5;
     private int maxDimension = 9;
     //blocking tiles
-    private static string traversableTiles = "xT";
+    private string traversableTiles = "xT";
 
+    #region Populating Level Map
     // Use this for initialization
     public LevelMap()
     {
         Random.InitState(System.Environment.TickCount);
         maxNrOfRooms = Random.Range(10,16);
         rooms = new List<Room>(maxNrOfRooms);
+        level = new char[nrOfLines, nrOfLines];
         string debugOutput = "Max nr of rooms: "+ maxNrOfRooms.ToString();
         Debug.Log(debugOutput);
         InitLevel();
         PopulateLevel();
-        //DrawTunnels();
-        ClearUnusedDoors();
+        DrawTunnels();
+        //ClearUnusedDoors();
         debugOutput += "\nNumber of rooms added: " + rooms.Count.ToString();
         Debug.Log(debugOutput);
         PrintLevel();
@@ -45,6 +47,7 @@ public class LevelMap
         return level;
     }
 
+    //initializing the level
     private void InitLevel()
     {
         for (int i = 0; i < nrOfLines; i++)
@@ -60,8 +63,9 @@ public class LevelMap
 
         Debug.Log("LEVEL INITIALIZED. \nTIME: " + Time.realtimeSinceStartup.ToString() + " seconds");
     }
-
-    private static Point[] GetRoomDoors(int x, int y, int rWidth, int rLen)
+    
+    //returns an array with all 4 doors
+    private Point[] GetRoomDoors(int x, int y, int rWidth, int rLen)
     {
         Point[] res = new Point[4];
         int c = 0;
@@ -76,7 +80,7 @@ public class LevelMap
     }
 
     //adds the room to the array and draws it on the level map
-    private static void AddRoom(Room givenRoom)
+    private void AddRoom(Room givenRoom)
     {
         //drawing the room on the level
         for (int i = givenRoom.GetCornerX(), tempI = 0; i < givenRoom.GetCornerX() + givenRoom.GetRoomWidth(); i++, tempI++)
@@ -90,7 +94,7 @@ public class LevelMap
     }
 
     //checks the area on the level to see if the room colides with another
-    private static bool CheckArea(int cornerX, int cornerY, int rWidth, int rLen)
+    private bool CheckArea(int cornerX, int cornerY, int rWidth, int rLen)
     {
         for (int i = cornerX - 2; i < cornerX + rWidth + 3; i++)
             for (int j = cornerY - 2; j < cornerY + rLen + 3; j++)
@@ -98,18 +102,20 @@ public class LevelMap
                     return false;
         return true;
     }
+
     //populates the level with rooms
     private void PopulateLevel()
     {
         Random.InitState(System.Environment.TickCount);
+
         //Starting room (9 tiles, 5x5 with walls)
         int rLength;
         int rWidth;
-        int givenX = Random.Range(3, nrOfLines - 4);
-        int givenY = Random.Range(3, nrOfLines - 4);
-        /*
+        int givenX = Random.Range(3, nrOfLines - 9);
+        int givenY = Random.Range(3, nrOfLines - 9);
+        
         rooms.Add(new StartRoom(givenX, givenY));
-        AddRoom(rooms[0]);*/
+        AddRoom(rooms[0]);
         
         //Boss room (81 tiles, 11x11 with walls)
         bool bossRoomPlaced = false;
@@ -120,7 +126,7 @@ public class LevelMap
             if (CheckArea(givenX, givenY, 11, 11))
             {
                 rooms.Add(new BossRoom(givenX, givenY));
-                AddRoom(rooms[0]);
+                AddRoom(rooms[1]);
                 bossRoomPlaced = true;
             }
         }
@@ -132,23 +138,25 @@ public class LevelMap
             rWidth = Random.Range(minDimension, maxDimension + 1);
             givenX = Random.Range(3, nrOfLines - 4);
             givenY = Random.Range(3, nrOfLines - 4);
+
             if (CheckArea(givenX, givenY, rWidth, rLength))
             {
                 rooms.Add(new NormalRoom(givenX, givenY, rLength, rWidth));
                 AddRoom(rooms[rooms.Count - 1]);
             }
-        }
-        */
+        }*/
+        
         Debug.Log("LEVEL POPULATED. \nTIME: " + Time.realtimeSinceStartup.ToString() + " seconds");
     }
+    #endregion
 
-    //A* BEGIN
+    #region Pathfinding - A*
 
     //Manhattan distance
-    private static float Distance(Point p1, Point p2)
+    private int Distance(Point p1, Point p2)
     {
-        float xDist = Mathf.Abs(p1.GetX() - p2.GetX());
-        float yDist = Mathf.Abs(p1.GetY() - p2.GetY());
+        int xDist = Mathf.Abs(p1.GetX() - p2.GetX());
+        int yDist = Mathf.Abs(p1.GetY() - p2.GetY());
         return xDist + yDist;
     }
 
@@ -156,119 +164,127 @@ public class LevelMap
      * returns the valid neighbors
      * given by the traversable tiles array
      */
-    private static List<AStarNode> GetValidNeighbors(List<Point> neighbors)
+    private List<Point> GetValidNeighbors(List<Point> neighbors)
     {
-        List<AStarNode> res = new List<AStarNode>();
+        List<Point> res = new List<Point>();
         foreach (Point neighbor in neighbors)
             if (traversableTiles.IndexOf(level[neighbor.GetX(), neighbor.GetY()]) != -1)
-                res.Add(new AStarNode(neighbor));
+                res.Add(neighbor);
         return res;
     }
 
-    //returns the lowest score from the openSet
-    private static AStarNode GetLowestScore(List<AStarNode> openSet, AStarNode current, AStarNode destination)
+    //returns the lowest fScore from the openSet
+    private Point GetLowestScore(List<Point> openSet, Dictionary<Point, int> fScore, Point destination)
     {
-        AStarNode minPoint = openSet[0];
+        Point closestPoint = openSet[0];
 
-        foreach (AStarNode openPoint in openSet)
-            if (openPoint.GetFScore() < minPoint.GetFScore() || 
-                openPoint.GetFScore() == minPoint.GetFScore() 
-                && Distance(openPoint.GetValue(), destination.GetValue()) < Distance(current.GetValue(), destination.GetValue()))
-                minPoint = openPoint;
+        for (int i = 1; i < openSet.Count; i++)
+            if (fScore[closestPoint] > fScore[openSet[i]] || fScore[closestPoint] == fScore[openSet[i]] && 
+                                                             Distance(closestPoint, destination) > Distance(openSet[i], destination))
+                closestPoint = openSet[i];
 
-        return minPoint;
+        return closestPoint;
     }
 
     //used instead of overriding equals
-    private static bool AreEqual(AStarNode node1, AStarNode node2)
+    private bool AreEqual(Point node1, Point node2)
     {
-        if (node1.GetValue().GetX() == node2.GetValue().GetX() &&
-            node1.GetValue().GetY() == node2.GetValue().GetY())
+        if (node1.GetX() == node2.GetX() &&
+            node1.GetY() == node2.GetY())
             return true;
         return false;
     }
 
-    //the A* itself
-    private static int FindPath(Point pointStart, Point pointDestination)
+    //A* BEGIN
+    private int FindPath(Point start, Point destination)
     {
-        AStarNode destination = GetValidNeighbors(pointDestination.GetNeighbors(level))[0];
-        AStarNode start = GetValidNeighbors(pointStart.GetNeighbors(level))[0];
-        start.SetOrigin(start);
+        destination = GetValidNeighbors(destination.GetNeighbors(level))[0];
+        start = GetValidNeighbors(start.GetNeighbors(level))[0];
 
-        HashSet<AStarNode> closedSet = new HashSet<AStarNode>();
-        List<AStarNode> openSet = new List<AStarNode> { start };
-        AStarNode current = start;
+        HashSet<Point> closedSet = new HashSet<Point>();
+        List<Point> openSet = new List<Point> { start };
+        Dictionary<Point, int> gScore = new Dictionary<Point, int> { { start, 0 } };
+        Dictionary<Point, int> fScore = new Dictionary<Point, int> { { start, Distance(start, destination) } };
+        Dictionary<Point, Point> cameFrom = new Dictionary<Point, Point>();
+
+        Point current = start;
+
         int runs = 0;
 
         while (openSet.Count != 0 && runs<3000)
         {
-            current = GetLowestScore(openSet, current, destination);
-
-            if (AreEqual(current, destination))
-            {
-                Debug.Log("PATH FOUND.\nRUNS: " + runs.ToString() + "\nTIME: " + Time.realtimeSinceStartup.ToString() + " seconds");
-                return GenerateTunnel(start, current);
-            }
+            current = GetLowestScore(openSet, fScore, destination);
 
             openSet.Remove(current);
             closedSet.Add(current);
 
-            foreach (AStarNode neighbor in GetValidNeighbors(current.GetValue().GetNeighbors(level)))
+            if (AreEqual(current, destination))
+            {
+                Debug.Log("PATH FOUND.\nRUNS: " + runs.ToString() + "\nTIME: " + Time.realtimeSinceStartup.ToString() + " seconds");
+                return GenerateTunnel(start, current, cameFrom);
+            }
+
+            foreach (Point neighbor in GetValidNeighbors(current.GetNeighbors(level)))
             {
                 Debug.Log("LOOP FOREACH");
                 if (closedSet.Contains(neighbor))
                     continue;
 
-                float possibleScore = current.GetGScore() + 1;
+                int possibleScore = gScore[current] + 1;
 
-                if (possibleScore < neighbor.GetGScore() || openSet.IndexOf(neighbor) == -1)
-                {
-                    neighbor.SetOrigin(current);
-                    neighbor.SetGScore(possibleScore);
-                    neighbor.SetFScore(possibleScore + Distance(neighbor.GetValue(), destination.GetValue()));
-                    if(openSet.IndexOf(neighbor) == -1)
-                        openSet.Add(neighbor);
-                }
+                if (openSet.IndexOf(neighbor) == -1)
+                    openSet.Add(neighbor);
+                else
+                    if (possibleScore < gScore[neighbor])
+                        continue;
+
+                cameFrom[neighbor] = current;
+                gScore[neighbor] = possibleScore;
+                fScore[neighbor] = possibleScore + Distance(neighbor, destination);
             }
             runs++;
         }
 
         Debug.Log("PATH NOT FOUND.\nRUNS: " + runs.ToString() +
-            "\nSTART: " + start.GetValue().GetX() + " " + start.GetValue().GetY() +
-            "\nDEST:  " + destination.GetValue().GetX() + " " + destination.GetValue().GetY()
+            "\nSTART: " + start.GetX() + " " + start.GetY() +
+            "\nDEST:  " + destination.GetX() + " " + destination.GetY()
             + "\nTIME: " + Time.realtimeSinceStartup.ToString() + " seconds");
-
-        return -1;
+        return GenerateTunnel(start, current, cameFrom);
+        //return -1;
     }
+    //A* END
 
     //draws the tunnel on the level map
-    private static int GenerateTunnel(AStarNode start, AStarNode current)
+    private int GenerateTunnel(Point start, Point current, Dictionary<Point, Point> cameFrom)
     {
         //variable used to see if anything got generated
-        AStarNode tmpDest = current;
+        Point tmpDest = current;
+
         while (!AreEqual(current, start))
         {
-            level[current.GetValue().GetX(), current.GetValue().GetY()] = 'T';
-            current = current.GetOrigin();
+            level[current.GetX(), current.GetY()] = 'T';
+            current = cameFrom[current];
         }
-        level[current.GetValue().GetX(), current.GetValue().GetY()] = 'T';
+        level[current.GetX(), current.GetY()] = 'T';
 
-        Debug.Log("TUNNEL GENERATED.\nSTART: "+start.GetValue().GetX()+" "+ start.GetValue().GetY()+
-                                    "\nDEST:  "+ tmpDest.GetValue().GetX() + " " + tmpDest.GetValue().GetY()
+        Debug.Log("TUNNEL GENERATED.\nSTART: "+start.GetX()+" "+ start.GetY()+
+                                    "\nDEST:  "+ tmpDest.GetX() + " " + tmpDest.GetY()
                                     +"\nTIME: " + Time.realtimeSinceStartup.ToString() + " seconds");
         return 0;
     }
 
-    //A* END
+    #endregion
 
+    #region Drawing Tunnels
     //draws the tunnels between each two rooms
-    private static void DrawTunnels()
+    private void DrawTunnels()
     {
-        FindPath(rooms[0].GetDoors()[0], rooms[1].GetDoors()[0]);
+        FindPath(rooms[0].GetDoors()[0], rooms[1].GetDoors()[3]);
     }
+    #endregion
 
     //deletes any door that doesn't have an adjacent tunnel and makes it a wall
-    private static void ClearUnusedDoors()
+    private void ClearUnusedDoors()
     {
         for (int i = 0; i < nrOfLines - 1; i++)
             for (int j = 0; j < nrOfLines - 1; j++)
@@ -278,7 +294,7 @@ public class LevelMap
     }
 
     //prints the level in the console used for debugging
-    private static void PrintLevel()
+    private void PrintLevel()
     {
         string output = null;
         for (int i = 0; i < nrOfLines; i++)
