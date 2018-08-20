@@ -7,8 +7,8 @@ public class BossRoom: Room {
     {
         cornerX = givenCornerX;
         cornerY = givenCornerY;
-        roomLength = 11;
-        roomWidth = 11;
+        roomLength = 10;
+        roomWidth = 10;
         Debug.Log("-ROOM COORDINATES SET.");
         InitRoom();
         PopulateRoom();

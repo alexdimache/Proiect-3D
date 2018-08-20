@@ -58,11 +58,9 @@ public abstract class Room
         return roomWidth;
     }
 
-    public void ConnectDoor(Point givenDoor)
+    public void ConnectDoor(int givenDoor)
     {
-        for (int i = 0; i < 4; i++)
-            if (doors[i].GetX() == givenDoor.GetX() && doors[i].GetY() == givenDoor.GetY())
-                connectedDoors[i] = true;
+        connectedDoors[givenDoor] = true;
     }
 
     //Creating walls and doors

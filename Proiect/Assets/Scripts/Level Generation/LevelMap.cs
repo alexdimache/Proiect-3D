@@ -7,14 +7,14 @@ public class LevelMap
     //array of rooms
     private List<Room> rooms;
     //number of lines of the level array
-    private int nrOfLines = 60;
+    private int nrOfLines = 40;
     //the level map array
     private char[,] level;
     //the maximum number of rooms in the level
     private int maxNrOfRooms;
     //room dimensions
     private int minDimension = 5;
-    private int maxDimension = 9;
+    private int maxDimension = 10;
     //blocking tiles
     private string traversableTiles = "xT";
 
@@ -31,7 +31,7 @@ public class LevelMap
         InitLevel();
         PopulateLevel();
         DrawTunnels();
-        //ClearUnusedDoors();
+        ClearUnusedDoors();
         debugOutput += "\nNumber of rooms added: " + rooms.Count.ToString();
         Debug.Log(debugOutput);
         PrintLevel();
@@ -130,7 +130,7 @@ public class LevelMap
                 bossRoomPlaced = true;
             }
         }
-        /*
+
         //the rest of the rooms
         while (rooms.Count < maxNrOfRooms)
         {
@@ -144,7 +144,7 @@ public class LevelMap
                 rooms.Add(new NormalRoom(givenX, givenY, rLength, rWidth));
                 AddRoom(rooms[rooms.Count - 1]);
             }
-        }*/
+        }
         
         Debug.Log("LEVEL POPULATED. \nTIME: " + Time.realtimeSinceStartup.ToString() + " seconds");
     }
@@ -220,7 +220,7 @@ public class LevelMap
 
             if (AreEqual(current, destination))
             {
-                Debug.Log("PATH FOUND.\nRUNS: " + runs.ToString() + "\nTIME: " + Time.realtimeSinceStartup.ToString() + " seconds");
+                Debug.Log("PATH FOUND.");
                 return GenerateTunnel(start, current, cameFrom);
             }
 
@@ -249,8 +249,8 @@ public class LevelMap
             "\nSTART: " + start.GetX() + " " + start.GetY() +
             "\nDEST:  " + destination.GetX() + " " + destination.GetY()
             + "\nTIME: " + Time.realtimeSinceStartup.ToString() + " seconds");
-        return GenerateTunnel(start, current, cameFrom);
-        //return -1;
+
+        return -1;
     }
     //A* END
 
@@ -276,10 +276,60 @@ public class LevelMap
     #endregion
 
     #region Drawing Tunnels
+
+    int[] GetClosestDoor(List<Room>roomsCopy, Room currentRoom)
+    {
+        int tempDist = int.MaxValue;
+        int[] res=new int[3];
+        res[0] = 0;
+
+        for (int i = 0; i < 4; i++)
+            for (int j = 0; j < roomsCopy.Count; j++)
+            {
+                if (currentRoom.GetCornerX() == roomsCopy[j].GetCornerX() && currentRoom.GetCornerY() == roomsCopy[j].GetCornerY())
+                    continue;
+
+                for (int k = 0; k < 4; k++)
+                    if (Distance(currentRoom.GetDoors()[i], roomsCopy[j].GetDoors()[k]) < tempDist &&
+                        !roomsCopy[j].GetDoorStatus()[k] && !currentRoom.GetDoorStatus()[i])
+                    {
+                        tempDist = Distance(currentRoom.GetDoors()[i], roomsCopy[j].GetDoors()[k]);
+                        res[0] = i;
+                        res[1] = j;
+                        res[2] = k;
+                    }
+            }
+                
+
+        return res;
+    }
+
     //draws the tunnels between each two rooms
     private void DrawTunnels()
     {
-        FindPath(rooms[0].GetDoors()[0], rooms[1].GetDoors()[3]);
+        List<Room> roomsCopy = rooms;
+        Room currentRoom = roomsCopy[0];
+        Room tempRoom;
+        int[] res;
+        int cnt = 0;
+        while (roomsCopy.Count > 1 && cnt < 20)
+        { 
+            // 0 currentDoor
+            // 1 targetRoom
+            // 2 targetDoor
+            res = GetClosestDoor(roomsCopy, currentRoom);
+
+            if(FindPath(currentRoom.GetDoors()[res[0]], roomsCopy[res[1]].GetDoors()[res[2]]) == 0)
+            {
+                currentRoom.ConnectDoor(res[0]);
+                roomsCopy[res[1]].ConnectDoor(res[2]);
+
+                tempRoom = currentRoom;
+                currentRoom = roomsCopy[res[1]];
+                roomsCopy.Remove(tempRoom);
+            }
+            cnt++;
+        }
     }
     #endregion
 
