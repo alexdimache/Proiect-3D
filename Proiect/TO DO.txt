@@ -1,0 +1,118 @@
+BUGS
+- arma
+
+IMPLEMENTARE ARME
+	- crosshair
+	- weapon holder
+	- weapon switch
+	- pickup weapon
+	- shoot
+	- deal dmg
+	- ammo
+	- HP/AP packs
+	- weapon sway (OPTIONAL)
+
+>>>SOUNDS<<<
+	- player
+	- weapons
+	- effect
+	- environment
+	- enemies
+
+GAME MANAGER
+INAMICI - AI
+MENU
+
+
+LISTA ARME:
+--------------------------------------------------------------------
+- BLOODY AXE:
+
+	PRIMARY FIRE: Melee
+
+	SECONDARY FIRE: none
+
+- DRAGONBLADE:
+
+	PRIMARY FIRE: Shoot an arching projectile
+
+	SECONDARY FIRE: Shoot a spear
+
+- STAFF OF PAIN:
+
+	PRIMARY FIRE: Launch projectile, explodes on impact or after max distance
+
+	SECONDARY FIRE: Throw projectiles, explode on impact with enemy or after 2 seconds
+
+- KING AXE:
+
+	PRIMARY FIRE: Shoot a ray
+
+	SECONDARY FIRE: Sticky ball of lightning
+
+- EMERALD STAFF:
+
+	PRIMARY FIRE: Shoot projectiles with slight homing
+
+	SECONDARY FIRE: Shoot two projectiles
+
+--------------------------------------------------------------------
+
+LISTA EFECTE:
+--------------------------------------------------------------------
+cu fiecare hit PRIMIT slow-ul creste pana la un maximum de 0.9
+- freezing: nulling effects = burning
+			upfrontDamage = 10
+			effectDuration = 6
+			effectDamage = 0
+			damageDealtMultiplier = 0.9
+			damageReceivedMultiplier = 1.15
+			effectSpeed = 0.3
+
+cu fiecare hit PRIMIT playerul primeste cu 10% mai mult damage 
+pana la un maximum de 50%
+- burning: nulling effects = freezing
+		   upfrontDamage = 5
+		   effectDuration = 5
+		   effectDamage = 5
+		   damageDealtMultiplier = 1.3
+		   damageReceivedMultiplier = 1
+		   effectSpeed = 1
+
+cu fiecare hit PRIMIT damage-ul creste pana la un maximum de 10 pe secunda
+si durata este resetata
+- bleeding: nulling effects = poisoned
+			upfrontDamage = 10
+			effectDuration = 5
+			effectDamage = 2
+			damageDealtMultiplier = 0.9
+			damageReceivedMultiplier = 1.1
+			effectSpeed = 1
+
+cu fiecare hit PRIMIT durata efectului este prelungita cu o secunda
+- cursed:  nulling effects = null
+		   upfrontDamage = 6
+		   effectDuration = 3
+		   effectDamage = 0.3 * (damage dealt by player)
+		   damageDealtMultiplier = 0.6
+		   damageReceivedMultiplier = 1.6
+		   effectSpeed = 0.666
+
+cu fiecare hit DAT player-ul primeste 1% din HP dat inapoi
+- berserking: nulling effects = null
+			  upfrontDamage = 0
+			  effectDuration = 10 (minus o secunda per hit primit)
+			  effectDamage = 0
+			  damageDealtMultiplier = 2
+			  damageReceivedMultiplier = 1.5
+			  effectSpeed = 1
+
+cu fiecare hit PRIMIT player-ul primeste de cu 10% mai mult damage
+- poisoned:  nulling effects = bleeding
+			 upfrontDamage = 15
+			 effectDuration = 5
+			 effectDamage = 5
+			 damageDealtMultiplier = 1
+			 damageReceivedMultiplier = 1 (+0.1 cu fiecare hit PRIMIT)
+			 effectSpeed = 1
+--------------------------------------------------------------------
