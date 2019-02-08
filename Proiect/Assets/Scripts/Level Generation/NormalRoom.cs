@@ -3,12 +3,12 @@
 public class NormalRoom : Room {
 
     //constructor
-    public NormalRoom(int givenCornerX, int givenCornerY, int rLength, int rWidth)
+    public NormalRoom(int givenCornerX, int givenCornerY)
     {
         cornerX = givenCornerX;
         cornerY = givenCornerY;
-        roomLength = rLength;
-        roomWidth = rWidth;
+        roomLength = 7;
+        roomWidth = 7;
         Debug.Log("-ROOM COORDINATES SET.");
         InitRoom();
         PopulateRoom();
