@@ -10,7 +10,7 @@ public class Player : MonoBehaviour
     // list of effects
     private List<ActiveEffect> activeEffects;
     // weapon holder instance
-    private WeaponHolder weaponHolder;
+    //private WeaponHolder weaponHolder;
 
 	// Use this for initialization
 	void Start ()
@@ -19,7 +19,7 @@ public class Player : MonoBehaviour
         armorPoints = 0;
 
         activeEffects = new List<ActiveEffect>();
-        weaponHolder = GetComponentInChildren<WeaponHolder>();
+        //weaponHolder = GetComponentInChildren<WeaponHolder>();
 	}
 	
 	// Update is called once per frame
